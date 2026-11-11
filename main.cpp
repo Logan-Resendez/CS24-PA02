@@ -1,6 +1,6 @@
 // Winter'24
 // Instructor: Diba Mirza
-// Student name: 
+// Student name: Logan Resendez
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -34,22 +34,20 @@ int main(int argc, char** argv){
         exit(1);
     }
   
-    // Create an object of a STL data-structure to store all the movies
-
+    MovieDatabase db;
     string line, movieName;
     double movieRating;
-    // Read each file and store the name and rating
-    while (getline (movieFile, line) && parseLine(line, movieName, movieRating)){
-            // Use std::string movieName and double movieRating
-            // to construct your Movie objects
-            // cout << movieName << " has rating " << movieRating << endl;
-            // insert elements into your data structure
-    }
 
+    while (getline (movieFile, line) && parseLine(line, movieName, movieRating)){
+        db.addMovie(movieName, movieRating);
+    }
     movieFile.close();
 
+    db.sortAlphabetically();
+    cout << fixed << setprecision(1);
+
     if (argc == 2){
-            //print all the movies in ascending alphabetical order of movie names
+            db.printAlphabetically();
             return 0;
     }
 
@@ -66,20 +64,39 @@ int main(int argc, char** argv){
             prefixes.push_back(line);
         }
     }
+    prefixFile.close();
 
-    //  For each prefix,
-    //  Find all movies that have that prefix and store them in an appropriate data structure
-    //  If no movie with that prefix exists print the following message
-    cout << "No movies found with prefix "<<"<replace with prefix>" << endl;
-
-    //  For each prefix,
-    //  Print the highest rated movie with that prefix if it exists.
-    cout << "Best movie with prefix " << "<replace with prefix>" << " is: " << "replace with movie name" << " with rating " << std::fixed << std::setprecision(1) << "replace with movie rating" << endl;
-
+    db.searchByPrefix(prefixes);
     return 0;
 }
 
-/* Add your run time analysis for part 3 of the assignment here as commented block*/
+/* 
+Time and Space Complexity Analysis
+
+    Parameters:
+        - n: Number of movies
+        - m: Number of prefixes
+        - k: Max number of movies with any single prefix
+        - l: Max length of movie title
+
+    Time Complexity:
+        Worst Case Time Complexity: O(m * l * (logn + klogk))
+
+        Specific Run Times:
+            input_20_random.csv: 6ms
+            input_100_random.csv: 8ms
+            input_1000_random.csv: 9ms
+            input_76920_random.csv: 80ms
+
+    Space Complexity:
+        Auxilary Space: O(k + m * l)
+
+    Tradeoffs Between Time/Space Complexity
+        I designed my algorithm for both a low time and space complexity. I feel I was able to achieve this due to the
+        single sorted vector that I stored combined with binary search and a pointer-based collection. Achieving low time
+        complexity was harder since using a vector naturally allowed lower space complexity. 
+*/
+
 
 bool parseLine(string &line, string &movieName, double &movieRating) {
     int commaIndex = line.find_last_of(",");
